@@ -1,0 +1,238 @@
+5.
+from bokeh.plotting import figure, show
+from bokeh.io import output_notebook
+from bokeh.transform import dodge
+from bokeh.models import ColumnDataSource
+
+output_notebook()
+
+def create_line_plot():
+    x = [1,2,3,4,5,6,7,8,9,10]
+    y1 = [2,4,6,8,10,12,14,16,18,20]
+    y2 = [i**2 for i in x]
+
+    p = figure(title="Line plot with Multiple Lines",
+               x_axis_label='X', y_axis_label="Y",
+               width=600, height=400)
+
+    p.line(x, y1, line_width=2, color="blue", legend_label="y = 2x")
+    p.line(x, y2, line_width=2, color="green", legend_label="y = x²")
+
+    return p
+
+
+def create_bar_chart():
+    categories = ['A','B','C','D','E','F','G','H','I','J']
+    values1 = [10,15,30,40,50,45,60,30,20,70]
+    values2 = [12,18,35,45,55,50,65,35,25,75]
+
+    source = ColumnDataSource(data=dict(categories=categories, values1=values1, values2=values2))
+
+    p = figure(x_range=categories, title="Grouped Bar Chart", width=800, height=400)
+    
+    # Use 'dodge' to separate the bars
+    p.vbar(x=dodge('categories', -0.2, range=p.x_range), top='values1', width=0.4,
+           source=source, color="blue", legend_label="Group 1")
+    p.vbar(x=dodge('categories',  0.2, range=p.x_range), top='values2', width=0.4,
+           source=source, color="orange", legend_label="Group 2")
+
+    p.xaxis.axis_label = "Categories"
+    p.yaxis.axis_label = "Values"
+    p.legend.title = "Groups"
+
+    return p
+
+
+def create_scatter_plot():
+    x = [1,2,3,4,5,6,7,8,9,10]
+    y = [5,6,2,4,3,8,10,12,15,18]
+    size = [10,12,8,15,20,25,30,35,40,45]
+
+    p = figure(title="Scatter plot with varying point size",
+               x_axis_label="X", y_axis_label="Y",
+               width=600, height=400)
+
+    p.scatter(x, y, size=size, color="red", alpha=0.6, legend_label="Data Points")
+
+    return p
+
+
+# Create and show plots
+line_plot = create_line_plot()
+bar_chart = create_bar_chart()
+scatter_plot = create_scatter_plot()
+
+show(line_plot)
+show(bar_chart)
+show(scatter_plot)
+
+
+
+6.
+import plotly.graph_objects as go
+import numpy as np
+
+
+def create_3d_scatter_plot():
+    x = np.random.rand(100)
+    y = np.random.rand(100)
+    z = np.random.rand(100)
+
+    scatter_plot = go.Figure(data=[go.Scatter3d(x=x, y=y, z=z, mode='markers')])
+    scatter_plot.show()
+
+def create_3d_surface_plot():
+    x = np.linspace(-5, 5, 50)
+    y = np.linspace(-5, 5, 50)
+    x, y = np.meshgrid(x, y)
+    z = np.sin(np.sqrt(x**2 + y**2))
+
+    surface_plot = go.Figure(
+        data=[go.Surface(x=x, y=y, z=z, colorscale='Viridis')]
+    )
+    surface_plot.update_layout(title='3D Surface Plot')
+    surface_plot.show()
+
+def create_3d_line_plot():
+    t = np.linspace(0, 10, 100)
+    x = np.sin(t)
+    y = np.cos(t)
+    z = t
+
+    line_plot = go.Figure(data=[go.Scatter3d(x=x, y=y, z=z, mode='lines')])
+    line_plot.show()
+
+create_3d_scatter_plot()
+create_3d_surface_plot()
+create_3d_line_plot()
+    
+
+7a.
+import plotly.graph_objects as go
+import pandas as pd
+
+dates = pd.date_range('2023-01-01',
+                      periods=10,
+                      freq='D')
+
+values = [100, 102, 105, 103, 110, 112, 115, 116, 119, 120]
+
+fig = go.Figure()
+fig.add_trace(go.Scatter(x=dates, 
+                         y=values, 
+                         mode='lines', 
+                         name='Stock Price'))
+
+fig.update_layout(
+    title = 'Time Series Plot of Stock Prices',
+    xaxis_title = "Date",
+    yaxis_title = "Stock Price",
+    template = "plotly_light"
+)
+
+fig.show()
+
+7b.
+import plotly.express as px
+import pandas as pd
+
+data = {
+    'Country': ['United States', 'China', 'India', 'Brazil', 'Australia', 'Germany', 'United Kingdom', 'Russia', 'Canada', 'Japan'],
+    'Value':[100, 200, 300, 150, 80, 120, 90, 60, 130, 110]
+}
+
+df = pd.DataFrame(data)
+
+fig = px.choropleth(
+    df,
+    locations='Country',              
+    locationmode='country names',
+    color='Value',
+    color_continuous_scale='Viridis',
+    labels={'Value': 'Country Value'},
+    title='Choropleth Map of the World Countries by Value'
+)
+
+fig.show()
+
+
+
+8.
+import matplotlib.pyplot as plt
+import matplotlib.animation as animation
+import numpy as np
+from IPython.display import HTML
+
+fig, ax = plt.subplots()
+xdata, ydata = [], []
+ln, = plt.plot([], [], 'ro-', animated=True)
+
+def init():
+    ax.set_xlim(0, 10)
+    ax.set_ylim(-1.5, 1.5)
+    return ln,
+
+def update(frame):
+    xdata.append(frame)
+    ydata.append(np.sin(frame))
+    ln.set_data(xdata, ydata)
+    return ln,
+
+ani = animation.FuncAnimation(fig, update, frames=np.linspace(0, 10, 200), init_func=init, blit=True)
+
+HTML(ani.to_jshtml())
+# plt.show()
+
+
+
+9.
+import matplotlib.pyplot as plt 
+import matplotlib.animation as animation
+from IPython.display import HTML
+
+fig, ax = plt.subplots()
+ax.set_xlim(0, 10)
+ax.set_ylim(0, 10)
+ax.set_aspect('equal')
+ax.axis('off')
+
+lines = []
+
+b_strokes = [
+    ([1, 1], [2, 8]),
+    ([1, 3], [8, 7]),
+    ([3, 1], [7, 6]),
+    ([1, 3], [6, 5]),
+    ([3, 1], [5, 2]),
+]
+
+
+m_strokes = [
+    ([4, 4], [2, 8]),
+    ([4, 4], [2, 8]),
+    ([4, 5], [8, 5]),
+    ([5, 6], [5, 8]),
+    ([6, 6], [8, 2]),
+]
+
+s_strokes = [
+    ([8, 10], [8, 8]),
+    ([8, 8], [8, 5]),
+    ([8, 10], [5, 5]),
+    ([10, 10], [5, 2]),
+    ([10, 8], [2, 2]),
+]
+
+all_strokes = b_strokes + m_strokes + s_strokes
+
+for stroke in all_strokes:
+    line, = ax.plot([], [], lw=3)
+    lines.append(line)
+
+def animate(i):
+    if i < len(lines):
+        lines[i].set_data(all_strokes[i][0], all_strokes[i][1])
+    return lines
+
+ani = animation.FuncAnimation(fig, animate, frames=len(lines)+10, interval=300)
+HTML(ani.to_jshtml())
